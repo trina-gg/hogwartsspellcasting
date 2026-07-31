@@ -42,6 +42,8 @@ header{padding:22px 0 4px}
 .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
 h1{font-family:var(--fs-display);font-size:clamp(34px,10vw,52px);line-height:.95;margin:5px 0 4px;font-weight:400}
 .subline{font-size:14.5px;color:var(--ink-soft);font-style:italic;font-family:var(--fs-display)}
+.build{margin-top:7px;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;
+  color:var(--ink-faint);display:inline-block;border:1px solid var(--rule);border-radius:2px;padding:3px 8px}
 .trail{height:20px;margin:12px 0 0;display:flex;align-items:center;gap:9px;opacity:.5;overflow:hidden}
 .trail i{display:block;width:7px;height:11px;border-radius:60% 60% 45% 45%;background:var(--ink);flex:0 0 auto}
 .trail i:nth-child(even){transform:translateY(7px) rotate(9deg)}
@@ -337,6 +339,7 @@ footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--rule);font-si
   <div class="eyebrow">Magic &amp; Mysterium &middot; Thursday Night</div>
   <h1>Baron Cassian</h1>
   <div class="subline">Willpower caster, 12th level &middot; Marauder's Prodigy &middot; Slytherin, Durmstrang</div>
+  <div class="build" id="build"></div>
   <div class="trail" aria-hidden="true"></div>
 </header>
 
@@ -1099,6 +1102,11 @@ $("btnLong").addEventListener("click", function(){
   S.slots = CHAR.slots.slice(); S.cards = {};
   drawAll(); save(); toast("Mischief managed");
 });
+
+(function(){
+  var locked = SPELLS.filter(isLocked).length;
+  $("build").textContent = "Build 8 \u00b7 " + SPELLS.length + " spells \u00b7 " + locked + " locked in";
+})();
 
 function drawAll(){
   drawVitals(); drawInsp(); drawSorcery(); drawSlots(); drawFlexible(); drawCards();
