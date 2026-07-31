@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#D9CDB0">
+<title>Baron Cassian — Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Alegreya+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --parch:#D9CDB0;
+  --parch-lo:#CBBD9B;
+  --parch-hi:#E6DCC4;
+  --ink:#221C15;
+  --ink-soft:#5A4C39;
+  --ink-faint:#8A7A61;
+  --oxblood:#6B241A;
+  --gilt:#95762C;
+  --inkblue:#2C3E57;
+  --rule:rgba(34,28,21,.22);
+  --fs-display:'IM Fell English', Georgia, 'Times New Roman', serif;
+  --fs-body:'Alegreya Sans', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --pad:clamp(14px, 4vw, 22px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--parch);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(107,36,26,.07), transparent 40%),
+    radial-gradient(circle at 88% 92%, rgba(44,62,87,.07), transparent 42%);
+  color:var(--ink);font-family:var(--fs-body);font-size:17px;line-height:1.45;
+  padding:0 var(--pad) 96px;max-width:720px;margin:0 auto;overscroll-behavior-y:contain;
+}
+button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--inkblue);outline-offset:3px;border-radius:2px}
+
+/* ---------- header ---------- */
+header{padding:22px 0 4px}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+h1{font-family:var(--fs-display);font-size:clamp(34px,10vw,52px);line-height:.95;margin:5px 0 4px;font-weight:400}
+.subline{font-size:14.5px;color:var(--ink-soft);font-style:italic;font-family:var(--fs-display)}
+.trail{height:20px;margin:12px 0 0;display:flex;align-items:center;gap:9px;opacity:.5;overflow:hidden}
+.trail i{display:block;width:7px;height:11px;border-radius:60% 60% 45% 45%;background:var(--ink);flex:0 0 auto}
+.trail i:nth-child(even){transform:translateY(7px) rotate(9deg)}
+.trail i:nth-child(odd){transform:translateY(-3px) rotate(-7deg)}
+
+/* ---------- tabs ---------- */
+.tabs{
+  position:sticky;top:0;z-index:15;display:flex;
+  background:var(--parch);border-bottom:1px solid var(--rule);
+  margin:6px calc(var(--pad) * -1) 0;padding:0 var(--pad);
+}
+.tabs button{
+  flex:1;padding:12px 4px 10px;font-family:var(--fs-display);font-size:17px;
+  color:var(--ink-faint);border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--oxblood)}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- shared ---------- */
+section{margin:26px 0 0}
+h2{font-family:var(--fs-display);font-weight:400;font-size:23px;margin:0 0 3px;
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+h2 .note{font-family:var(--fs-body);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.hr{height:1px;background:var(--rule);margin:0 0 14px}
+
+/* ---------- vitals ---------- */
+.vitals{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.stat{border:1px solid var(--rule);background:rgba(230,220,196,.5);padding:10px 8px 9px;text-align:center;border-radius:3px}
+.stat .k{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;display:block}
+.stat .v{font-family:var(--fs-display);font-size:29px;line-height:1.05;display:block;margin-top:2px}
+.hpbar{display:flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden;margin-bottom:9px;background:rgba(230,220,196,.5)}
+.hpbar .adj{width:58px;flex:0 0 auto;font-family:var(--fs-display);font-size:26px;background:rgba(34,28,21,.05)}
+.hpbar .adj:active{background:rgba(34,28,21,.14)}
+.hpbar .mid{flex:1;text-align:center;padding:8px 4px 9px;position:relative}
+.hpbar .k{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.hpbar .v{font-family:var(--fs-display);font-size:35px;line-height:1}
+.hpbar .v small{font-size:18px;color:var(--ink-faint)}
+.hpfill{position:absolute;inset:auto 0 0;height:3px;background:var(--oxblood);transition:width .25s}
+.actoggle{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  border:1px dashed var(--rule);border-radius:3px;padding:9px 12px;margin-top:9px;text-align:left}
+.actoggle[aria-pressed="true"]{border-style:solid;border-color:var(--inkblue);background:rgba(44,62,87,.09)}
+.actoggle .lab{font-size:14.5px}
+.actoggle .lab em{display:block;font-size:12px;color:var(--ink-faint);font-style:normal}
+.switch{width:44px;height:24px;border-radius:12px;border:1px solid var(--rule);background:rgba(34,28,21,.07);position:relative;flex:0 0 auto}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+  background:var(--ink-soft);transition:transform .18s, background .18s}
+.actoggle[aria-pressed="true"] .switch::after{transform:translateX(20px);background:var(--inkblue)}
+
+/* ---------- inspiration ---------- */
+.insp{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.insp button{border:1px solid var(--rule);border-radius:3px;padding:13px 10px 12px;text-align:center;
+  background:rgba(230,220,196,.5)}
+.insp button[aria-pressed="true"]{border-color:var(--gilt);background:rgba(149,118,44,.14)}
+.insp .star{display:block;font-size:26px;line-height:1;color:var(--ink-faint);margin-bottom:4px}
+.insp button[aria-pressed="true"] .star{color:var(--gilt)}
+.insp .k{font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;display:block}
+.insp .s{font-size:12px;color:var(--ink-faint);display:block;margin-top:2px}
+
+/* ---------- pips ---------- */
+.pips{display:flex;flex-wrap:wrap;gap:9px}
+.pip{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--ink);background:var(--ink);
+  position:relative;flex:0 0 auto;transition:background .14s,border-color .14s,transform .1s}
+.pip:active{transform:scale(.9)}
+.pip.spent{background:transparent;border-color:var(--ink-faint)}
+.pip.spent::before,.pip.spent::after{content:"";position:absolute;left:50%;top:50%;width:26px;height:1.5px;background:var(--oxblood)}
+.pip.spent::before{transform:translate(-50%,-50%) rotate(41deg)}
+.pip.spent::after{transform:translate(-50%,-50%) rotate(-41deg)}
+.pip.sorc{background:var(--inkblue);border-color:var(--inkblue)}
+.pip.sorc.spent{background:transparent;border-color:var(--ink-faint)}
+.slotrow{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dotted var(--rule)}
+.slotrow:last-child{border-bottom:none}
+.slotrow .lvl{width:46px;flex:0 0 auto;font-family:var(--fs-display);font-size:21px;line-height:1}
+.slotrow .lvl em{display:block;font-family:var(--fs-body);font-style:normal;font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.sorcwrap{border:1px solid var(--rule);border-radius:3px;padding:14px;background:rgba(44,62,87,.05)}
+.sorccount{font-family:var(--fs-display);font-size:15px;color:var(--ink-soft);margin:10px 0 0}
+.sorccount b{font-size:22px;color:var(--ink)}
+
+/* ---------- chips ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+.chip{border:1px solid var(--rule);border-radius:2px;padding:7px 11px;font-size:14px;
+  background:rgba(230,220,196,.55);display:flex;align-items:center;gap:7px}
+.chip:active{background:rgba(34,28,21,.1)}
+.chip .cost{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--inkblue);
+  border-left:1px solid var(--rule);padding-left:7px}
+.chip[disabled]{opacity:.38}
+
+/* ---------- cards ---------- */
+.card{border:1px solid var(--rule);border-left:3px solid var(--gilt);border-radius:0 3px 3px 0;
+  padding:12px 13px;margin-bottom:9px;background:rgba(230,220,196,.42)}
+.card.used{opacity:.44;border-left-color:var(--ink-faint)}
+.card.always{border-left-color:var(--inkblue)}
+.card h3{font-family:var(--fs-display);font-size:19px;font-weight:400;margin:0 0 3px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card h3 .tag{font-family:var(--fs-body);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:800;color:var(--ink-faint);border:1px solid var(--rule);padding:2px 6px;border-radius:2px;flex:0 0 auto}
+.card p{margin:0;font-size:14.5px;color:var(--ink-soft)}
+.card .mark{margin-top:9px;font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;
+  border:1px solid var(--rule);border-radius:2px;padding:6px 10px;background:rgba(230,220,196,.6)}
+.card.used .mark{background:rgba(107,36,26,.1);border-color:var(--oxblood);color:var(--oxblood)}
+
+/* ---------- spells ---------- */
+.search{width:100%;border:1px solid var(--rule);border-radius:3px;padding:11px 13px;font:inherit;
+  font-size:16px;background:rgba(230,220,196,.5);color:var(--ink);margin-bottom:6px}
+.search::placeholder{color:var(--ink-faint)}
+.tally{font-size:12.5px;color:var(--ink-faint);margin:0 0 14px;letter-spacing:.04em}
+.tally b{color:var(--gilt);font-weight:800}
+.lvlgroup{border-bottom:1px solid var(--rule)}
+.lvlgroup > summary{list-style:none;cursor:pointer;padding:13px 2px;display:flex;align-items:baseline;gap:10px;
+  font-family:var(--fs-display);font-size:21px}
+.lvlgroup > summary::-webkit-details-marker{display:none}
+.lvlgroup > summary .n{margin-left:auto;font-family:var(--fs-body);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-faint)}
+.lvlgroup > summary::before{content:"\25B8";font-size:13px;color:var(--ink-faint);transition:transform .15s;display:inline-block}
+.lvlgroup[open] > summary::before{transform:rotate(90deg)}
+.lvlbody{padding:0 0 10px 16px}
+.spell{border-top:1px dotted var(--rule)}
+.spell > summary .srow{display:flex;align-items:baseline;gap:9px}
+.spell > summary .srow2{display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px;margin-top:4px}
+.spell .ct{
+  font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:800;
+  color:var(--parch-hi);background:var(--ink-soft);padding:2px 7px;border-radius:2px;flex:0 0 auto;
+}
+.spell .dot{font-size:12.5px;color:var(--ink-faint)}
+.spell .dot::before{content:"\00b7";margin-right:8px;color:var(--rule)}
+.badge.st{border-color:var(--ink-faint);color:var(--ink-faint)}
+.spell.st-locked > summary .badge.st{border-color:var(--gilt);color:var(--gilt)}
+.spell.st-one > summary .badge.st{border-color:var(--inkblue);color:var(--inkblue)}
+.spell.st-locked .nm{color:var(--ink);font-style:normal}
+.statline{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0 0 11px;font-size:14px}
+.statline dt{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--ink-faint);padding-top:3px}
+.statline dd{margin:0;color:var(--ink)}
+.prog{margin-top:13px;padding-top:11px;border-top:1px dotted var(--rule)}
+.plab{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--ink-faint);margin-bottom:7px}
+.opt,.chk{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:8px 4px;font-size:14.5px;color:var(--ink-soft);border-radius:2px}
+.opt:active,.chk:active{background:rgba(34,28,21,.06)}
+.opt .dotmark{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--ink-faint);flex:0 0 auto;position:relative}
+.opt.on{color:var(--ink);font-weight:700}
+.opt.on .dotmark{border-color:var(--gilt)}
+.opt.on .dotmark::after{content:"";position:absolute;inset:3.5px;border-radius:50%;background:var(--gilt)}
+.chk{margin-top:2px}
+.chk:first-of-type{margin-top:9px;padding-top:13px;border-top:1px dotted var(--rule)}
+.chk .box{width:18px;height:18px;border:1.5px solid var(--ink-faint);flex:0 0 auto;border-radius:2px;position:relative}
+.chk.on{color:var(--ink)}
+.chk.on .box{border-color:var(--gilt);background:var(--gilt)}
+.chk.on .box::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;
+  border:solid var(--parch-hi);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.spell > summary{list-style:none;cursor:pointer;padding:10px 2px;display:flex;align-items:center;gap:9px}
+.spell > summary::-webkit-details-marker{display:none}
+.spell .nm{font-family:var(--fs-display);font-size:18px;flex:1;line-height:1.15}
+.spell.unlocked .nm{color:var(--ink-soft);font-style:italic}
+.badge{flex:0 0 auto;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;
+  padding:2px 6px;border-radius:2px;border:1px solid var(--rule);color:var(--ink-faint)}
+.badge.lock{border-color:var(--gilt);color:var(--gilt)}
+.badge.conc{border-color:var(--oxblood);color:var(--oxblood)}
+.badge.ded{border-color:var(--oxblood);color:var(--oxblood);background:rgba(107,36,26,.1)}
+.badge.atk{border-color:var(--gilt);color:var(--gilt)}
+.spell .sub{font-family:var(--fs-display);font-style:italic;font-size:14.5px;color:var(--ink-faint);margin-bottom:7px}
+.spell .body{padding:2px 2px 14px;font-size:14.5px;color:var(--ink-soft)}
+.spell .meta{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px;font-size:11.5px;
+  letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--ink-faint)}
+.attempts{display:flex;align-items:center;gap:9px;margin-top:11px;padding-top:10px;border-top:1px dotted var(--rule)}
+.attempts .lab{font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink-faint)}
+.att{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ink-faint);background:transparent;flex:0 0 auto}
+.att.on{background:var(--gilt);border-color:var(--gilt)}
+.attempts .done{font-size:12px;color:var(--gilt);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+
+/* ---------- reference ---------- */
+details.ref{border-top:1px solid var(--rule);padding:12px 0}
+details.ref summary{cursor:pointer;list-style:none;font-size:12px;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-faint)}
+details.ref summary::-webkit-details-marker{display:none}
+details.ref summary::after{content:" +";float:right}
+details.ref[open] summary::after{content:" \2013";float:right}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;margin-top:12px}
+.line{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dotted var(--rule);font-size:14.5px}
+.line b{font-weight:700;font-variant-numeric:tabular-nums}
+.line .p{color:var(--gilt);font-weight:800;font-size:11px;letter-spacing:.08em}
+
+/* ---------- rest bar ---------- */
+.restbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:1px;background:var(--rule);
+  border-top:1px solid var(--rule);padding-bottom:env(safe-area-inset-bottom)}
+.restbar button{flex:1;background:var(--parch-hi);padding:14px 6px 15px;font-family:var(--fs-display);font-size:17px}
+.restbar button:active{background:var(--parch-lo)}
+.restbar button em{display:block;font-family:var(--fs-body);font-style:normal;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:1px}
+.toast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,14px);background:var(--ink);
+  color:var(--parch-hi);padding:9px 16px;border-radius:2px;font-size:14px;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;z-index:30;max-width:88vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-faint)}
+@media (max-width:380px){.pip{width:34px;height:34px}.vitals{gap:7px}.tabs button{font-size:15px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Magic &amp; Mysterium &middot; Thursday Night</div>
+  <h1>Baron Cassian</h1>
+  <div class="subline">Willpower caster, 12th level &middot; Marauder's Prodigy &middot; Slytherin, Durmstrang</div>
+  <div class="trail" aria-hidden="true"></div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-tab="combat" aria-selected="true">Combat</button>
+  <button role="tab" data-tab="spells" aria-selected="false">Spells</button>
+  <button role="tab" data-tab="features" aria-selected="false">Features</button>
+  <button role="tab" data-tab="sheet" aria-selected="false">Sheet</button>
+</nav>
+
+<!-- ==================== COMBAT ==================== -->
+<div class="panel on" id="tab-combat" role="tabpanel">
+  <section>
+    <div class="hpbar">
+      <button class="adj" data-hp="-1" aria-label="Lose 1 hit point">&minus;</button>
+      <div class="mid">
+        <div class="k">Hit points</div>
+        <div class="v"><span id="hpNow">76</span><small>/76</small></div>
+        <div class="hpfill" id="hpFill"></div>
+      </div>
+      <button class="adj" data-hp="1" aria-label="Regain 1 hit point">+</button>
+    </div>
+    <div class="vitals">
+      <div class="stat"><span class="k">Armour class</span><span class="v" id="acVal">18</span></div>
+      <div class="stat"><span class="k">Spell save DC</span><span class="v">17</span></div>
+      <div class="stat"><span class="k">Spell attack</span><span class="v">+10</span></div>
+    </div>
+    <button class="actoggle" id="flyBtn" aria-pressed="false">
+      <span class="lab"><b>On a broomstick</b><em>Expertise: 2&times; proficiency &middot; +8 AC while flying</em></span>
+      <span class="switch" aria-hidden="true"></span>
+    </button>
+  </section>
+
+  <section>
+    <h2>Inspiration</h2>
+    <div class="hr"></div>
+    <div class="insp">
+      <button id="inspSelf" aria-pressed="true">
+        <span class="star" aria-hidden="true">&#9733;</span>
+        <span class="k">Yours</span><span class="s">to spend</span>
+      </button>
+      <button id="inspGive" aria-pressed="true">
+        <span class="star" aria-hidden="true">&#9733;</span>
+        <span class="k">To give</span><span class="s">hand to an ally</span>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sorcery points <span class="note">Font of Magic</span></h2>
+    <div class="hr"></div>
+    <div class="sorcwrap">
+      <div class="pips" id="sorcPips"></div>
+      <p class="sorccount"><b id="sorcNow">12</b> of 12 remaining</p>
+      <div class="chips" id="metaChips">
+        <button class="chip" data-sp="2">Fierce <span class="cost">2 SP &middot; +1 lvl</span></button>
+        <button class="chip" data-sp="4">Fierce <span class="cost">4 SP &middot; +2 lvl</span></button>
+        <button class="chip" data-sp="1">Resistant <span class="cost">1 SP / lvl</span></button>
+        <button class="chip" data-sp="2">Quickened <span class="cost">2 SP</span></button>
+        <button class="chip" data-sp="1">Subtle <span class="cost">2&times; lvl</span></button>
+        <button class="chip" data-sp="1">Twinned <span class="cost">= lvl</span></button>
+      </div>
+    </div>
+    <details class="ref">
+      <summary>Flexible casting &mdash; trade points and slots</summary>
+      <div class="chips" id="makeSlots"></div>
+      <div class="chips" id="burnSlots"></div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Spell slots <span class="note">Tap to spend</span></h2>
+    <div class="hr"></div>
+    <div id="slotRows"></div>
+  </section>
+</div>
+
+<!-- ==================== SPELLS ==================== -->
+<div class="panel" id="tab-spells" role="tabpanel">
+  <section>
+    <input class="search" id="spellSearch" type="search" placeholder="Search by name, level or school" autocomplete="off">
+    <p class="tally" id="tally"></p>
+    <div id="spellList"></div>
+  </section>
+</div>
+
+<!-- ==================== FEATURES ==================== -->
+<div class="panel" id="tab-features" role="tabpanel">
+  <section>
+    <h2>At the table <span class="note">Don't forget</span></h2>
+    <div class="hr"></div>
+    <div id="cards"></div>
+  </section>
+  <section>
+    <h2>Metamagic <span class="note">One per spell</span></h2>
+    <div class="hr"></div>
+    <div id="metaRef"></div>
+  </section>
+  <section>
+    <h2>Owl form <span class="note">Evasion Animagus &middot; Air</span></h2>
+    <div class="hr"></div>
+    <div class="vitals" style="margin-bottom:9px">
+      <div class="stat"><span class="k">Armour class</span><span class="v">14</span></div>
+      <div class="stat"><span class="k">Hit points</span><span class="v">20</span></div>
+      <div class="stat"><span class="k">Fly speed</span><span class="v">60</span></div>
+    </div>
+    <div class="card always">
+      <div class="line"><span>STR 10</span><b>+0</b></div>
+      <div class="line"><span>DEX 16</span><b>+3</b></div>
+      <div class="line"><span>CON 8</span><b>&minus;1</b></div>
+      <div class="line"><span>Stealth / Sleight of Hand</span><b>+7</b></div>
+      <div class="line"><span>Perception</span><b>+5</b></div>
+      <div class="line"><span>Investigation</span><b>+3</b></div>
+      <div class="line"><span>Passive Perception</span><b>15 &middot; 20 with Keen Senses</b></div>
+      <div class="line"><span>Rake &mdash; melee, reach 5 ft.</span><b>+1 &middot; 5 slashing</b></div>
+      <div class="line"><span>Walking speed</span><b>5 ft.</b></div>
+      <div class="line"><span>Darkvision</span><b>60 ft.</b></div>
+    </div>
+    <div class="card">
+      <h3>Cunning Action<span class="tag">Bonus action</span></h3>
+      <p>Dash, Disengage or Hide as a bonus action on each of your turns.</p>
+    </div>
+    <div class="card">
+      <h3>Keen Senses<span class="tag">Always on</span></h3>
+      <p>Advantage on Perception checks that rely on sight, hearing or smell. Understands your languages but can't speak.</p>
+    </div>
+    <div class="card" style="border-left-color:var(--oxblood)">
+      <h3>Before you transform<span class="tag">Watch out</span></h3>
+      <p>You drop to <b>20 hit points</b> and can't cast spells. Any Dedication spell you're holding ends immediately. Lasts up to 1 hour, or revert as a bonus action.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== SHEET ==================== -->
+<div class="panel" id="tab-sheet" role="tabpanel">
+  <section>
+    <h2>Saving throws &amp; skills</h2>
+    <div class="hr"></div>
+    <div class="grid2" id="refGrid"></div>
+  </section>
+  <section>
+    <h2>Always on</h2>
+    <div class="hr"></div>
+    <div id="passives"></div>
+  </section>
+  <footer>
+    Sorcerous Resilience sets AC at 13 + Dex. Progress saves on this device.
+    Locked-in spells and inspiration survive a long rest.
+  </footer>
+</div>
+
+<div class="restbar">
+  <button id="btnShort">Short rest<em>Clears once-per-rest</em></button>
+  <button id="btnLong">Mischief managed<em>Long rest &mdash; HP, slots, points</em></button>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ==================================================================
+   1. SPELLS
+   ------------------------------------------------------------------
+   start : 2 = locked in, 1 = one successful cast, 0 = not yet cast
+   Add time / range / duration / conc / text to any entry and the
+   card will show them.
+   ================================================================== */
+const C = "Charms", T = "Transfiguration", J = "Jinxes, Hexes & Curses",
+      H = "Healing", D = "Divination";
+const SPELLS = [
+  // ---- Cantrips ----
+  {name:"Vera Verto", level:0, school:T, start:2, sub:"The General Transfiguration Incantation", time:"1 action", range:"Touch", duration:"Until dispelled", text:"Transfigure one nonmagical object you can see within range that fits in a 1-foot cube into another nonmagical object of similar size and mass, and of equal or lesser value.<br><b>Higher levels:</b> for each slot level above 0, select or stack one — increase the cube by 2 ft; target a living Beast (unwilling: Wisdom save); or transfigure into a construct (Concentration, up to 1 minute)."},
+  {name:"Accio", level:0, school:C, start:2, sub:"The Summoning Charm", time:"1 action", range:"30 feet", duration:"Instantaneous", text:"A target object is pulled directly to you as if carried by an invisible hand. Point at it or name it. Nothing heavier than 20 pounds.<br><b>Higher levels:</b> per slot level above 0 — +100 ft range, +20 lb limit, or +5 targetable objects."},
+  {name:"Bombarda", level:0, school:J, start:2, sub:"The Exploding Charm", time:"1 action", range:"60 feet", duration:"Instantaneous", atk:true, text:"<b>Ranged spell attack.</b> On a hit, 3d10 bludgeoning damage at your level (1d10, +1d10 at 5th, 11th and 17th)."},
+  {name:"Spongify", level:0, school:C, start:2, sub:"The Softening Charm", time:"1 action or reaction", range:"30 feet", duration:"1 minute", text:"An object you can see becomes soft and bouncy. Damage from falling on or colliding with it is nullified. Can be cast as a reaction to a collision within 30 feet affecting a creature or two objects."},
+  {name:"Cantis", level:0, school:J, start:2, sub:"The Singing Jinx", time:"1 action", range:"60 feet", duration:"1 round", atk:true, text:"<b>Ranged spell attack.</b> On a hit, the target must cast all spells non-verbally until the end of its next turn. If it tries to cast verbally it must succeed on an Intelligence save or the casting fails and the spell is wasted."},
+  {name:"Scourgify", level:0, school:C, start:2, sub:"The Scouring Charm", time:"1 action", range:"10 feet", duration:"Instantaneous", text:"An object no larger than 5 cubic feet is flawlessly cleaned."},
+  {name:"Finestra", level:0, school:C, start:2, sub:"The Glass-Shattering Charm", time:"1 action", range:"10 feet", duration:"Instantaneous", text:"A pane of glass you can see turns to powder, discreetly becoming an open entryway."},
+  {name:"Anapneo", level:0, school:H, start:2, sub:"The Airway Clearing Spell", time:"1 action", range:"30 feet", duration:"Instantaneous", text:"A being's airway is cleared and they are assisted in breathing. Used on a living being at 0 hit points, the being becomes stable."},
+  {name:"Alohomora", level:0, school:C, start:2, sub:"The Unlocking Charm", time:"1 action", range:"60 feet", duration:"Instantaneous", text:"A door or window held by a mundane lock, or stuck or barred, becomes unlocked — one lock only if there are several. Removes Colloportus. The mechanism turns noisily, audible up to 100 feet away."},
+  {name:"Colloportus", level:0, school:C, start:2, sub:"The Locking Spell", time:"1 action", range:"Touch", duration:"Until dispelled", text:"A closed entryway becomes locked and impassable until broken, dispelled or suppressed. The DC to break it or pick its locks increases by 10."},
+  {name:"Wingardium Leviosa", level:0, school:C, start:2, sub:"The Levitation Charm", time:"1 action", range:"30 feet", duration:"Dedication, up to 1 minute", ded:true, text:"One creature other than yourself, or an object, rises up to 20 feet and stays suspended. Up to 100 pounds. An unwilling creature is unaffected on a successful Constitution save.<br>The target can only move by pushing or pulling against something in reach. You can change its altitude 20 feet on your turn, or use your action to move it within range.<br>Ended voluntarily it floats down gently; ended involuntarily it drops.<br><b>Higher levels:</b> +150 lb limit per slot level above 0."},
+  {name:"Locomotor Wibbly", level:0, school:J, start:2, sub:"The Jelly-Legs Jinx", time:"1 action", range:"60 feet", duration:"Instantaneous", atk:true, text:"<b>Ranged spell attack.</b> On a hit, the target is knocked prone."},
+  {name:"Crinus Muto", level:0, school:T, start:2, sub:"The Haircut Spell", time:"1 action", range:"Self", duration:"1 hour", text:"Your hair is lengthened, shortened, styled or coloured, eyebrows and facial hair included. Changed drastically you may be hard to recognise — a creature can use its action to inspect you and must beat your spell save DC on an Intelligence (Investigation) check."},
+  {name:"Carpe Retractum", level:0, school:C, start:2, sub:"The Seize and Pull Charm", time:"1 action", range:"60 feet", duration:"1 round", text:"A bond of light attaches to anything you can see and retracts, pulling you and the target 10 feet closer each. If one of you doesn't move or resists, the other moves 20 feet instead. An unwilling creature makes a Strength save to resist. The bond keeps you attached for the duration.<br><b>Higher levels:</b> range and pull both +5 ft per slot level above 0."},
+  {name:"Prior Incantato", level:0, school:D, start:2, sub:"The Reverse Spell", time:"1 action", range:"Self", duration:"Instantaneous", text:"Produces a ghostly recreation of the last spell cast by the wand in use. If it can't be shown visually, you learn the incantation instead — even if it was never spoken aloud. Cast up to three times consecutively on one wand to reveal its three most recent spells."},
+  {name:"Orchideous", level:0, school:T, start:2, sub:"The Flower-Conjuring Spell", time:"1 action", range:"10 feet", duration:"Instantaneous", text:"You conjure a blooming flower, bouquet or wreath in the desired location within range."},
+  {name:"Capto", level:0, school:C, start:2, sub:"The Gripping Charm", time:"1 action", range:"Touch", duration:"10 minutes", text:"One object becomes easy to grip in one hand, almost sticky until the holder willingly lets go. The holder has advantage against being non-magically disarmed."},
+  {name:"Sonorus/Quietus", level:0, school:C, start:0, sub:"The Amplifying Charm", time:"1 action", range:"Self", duration:"Until dispelled", text:"Hold your wand tip to your neck and your voice booms up to three times as loud — enough to fill a large stadium, without causing hearing damage. Casting quietus with your wand at your throat is the counter-charm and ends it."},
+  {name:"Genu Recurvatum", level:0, school:J, start:2, sub:"The Knee-Reversal Hex", time:"1 action", range:"60 feet", duration:"1 minute", atk:true, text:"<b>Ranged spell attack.</b> On a hit, the target's speed is halved for the duration."},
+  {name:"Glisseo", level:0, school:C, start:0, sub:"The Stairs-to-Slide Charm", time:"1 action", range:"30 feet", duration:"Concentration, up to 1 minute", conc:true, text:"Every connected step in a single flight of stairs within range angles downwards, turning the flight into an abnormally slick ramp."},
+  {name:"Infirma Cerebra", level:0, school:J, start:2, sub:"The Jelly-Brain Jinx", time:"1 action", range:"60 feet", duration:"1 round", atk:true, text:"<b>Ranged spell attack.</b> On a hit, 3d6 psychic damage at your level (1d6, +1d6 at 5th, 11th and 17th), and the first saving throw the target makes before the end of your next turn is reduced — it rolls a d4 and subtracts the result."},
+  {name:"Rennervate", level:0, school:H, start:2, sub:"The Reviving Spell", time:"1 action", range:"10 feet", duration:"Instantaneous", text:"The counterspell to stupefy. Magically induced unconsciousness ends for a being of your choice you can see within range."},
+
+  // ---- 1st level ----
+  {name:"Diffindo", level:1, school:C, start:2, sub:"The Severing Charm", time:"1 action", range:"30 feet", duration:"Instantaneous", text:"An object is precisely cut, as if a blade extended from your wand. It wasn't designed for creatures and only makes shallow cuts. Choose a target within range fitting a 5-foot cube — a creature makes a Dexterity save, taking 4d4 slashing on a fail, half on a success. This is the counterspell to incarcerous.<br><b>Higher levels:</b> from 2nd, target one extra creature or add 5 ft to the cube per slot level above 1st. Extra creatures must be within 10 feet of each other."},
+  {name:"Flipendo", level:1, school:J, start:2, sub:"The Knockback Jinx", time:"1 action", range:"60 feet", duration:"Instantaneous", text:"Strength save. On a fail: 1d10 bludgeoning, knocked back 5 × your spellcasting modifier in feet, and knocked prone. On a success: half damage, knocked back 5 feet, not prone.<br><b>Higher levels:</b> +1d10 damage and +5 ft knockback on a fail, per slot level above 1st."},
+  {name:"Arresto Momentum", level:1, school:C, start:2, sub:"The Slowing Charm", time:"1 reaction, when you or a creature within 60 feet falls", range:"60 feet", duration:"1 minute", text:"Choose up to five falling creatures within range. Their rate of descent slows to 60 feet per round. A creature landing before the spell ends takes no falling damage and lands on its feet, and the spell ends for it."},
+  {name:"Perfusorius", level:1, school:C, start:2, sub:"The Feather-Light Charm", time:"1 action", range:"Touch", duration:"1 hour", text:"An object of up to 500 pounds becomes barely heavier than the air around it. The slightest force moves, lifts or carries it, and it can be thrown easily."},
+  {name:"Episkey", level:1, school:H, start:2, sub:"The Fast-Healing Spell", time:"1 bonus action", range:"10 feet", duration:"Instantaneous", text:"A being you can see within range regains 2d4 + your spellcasting modifier hit points. No effect on undead or constructs.<br><b>Higher levels:</b> +1d4 healing per slot level above 1st."},
+  {name:"Protego", level:1, school:C, start:2, sub:"The Shield Charm", time:"1 action or reaction, when you are hit by an attack", range:"Self", duration:"Dedication, up to 10 minutes", ded:true, text:"An invisible barrier gives you <b>+5 AC</b> for the duration, including against the triggering attack. A spell requiring an attack roll whose level is at or below half your proficiency bonus has no effect on you.<br>Bonus action to change which way the shield faces. Attacked from the sides or behind, you must use your reaction to redirect it toward the threat — otherwise the spell doesn't protect you."},
+  {name:"Petrificus Totalus", level:1, school:J, start:0, sub:"The Full Body-Bind Curse", time:"1 action", range:"60 feet", duration:"Dedication, up to 1 minute", ded:true, atk:true, text:"<b>Ranged spell attack.</b> On a hit, the target is knocked prone and paralyzed for the duration.<br><b>Higher levels:</b> from 3rd, target a beast instead of a being."},
+  {name:"Colloshoo", level:1, school:J, start:0, sub:"The Stickfast Hex", time:"1 action", range:"90 feet", duration:"Concentration, up to 1 minute", conc:true, text:"A being wearing shoes makes a Dexterity save. On a fail it is restrained for the duration; failing by 5 or more also knocks it prone. It can use its action to remove its shoes, or make a Strength check against your spell save DC to pull them free."},
+  {name:"Rictusempra", level:1, school:C, start:0, sub:"The Tickling Charm", time:"1 action", range:"60 feet", duration:"1 round", atk:true, text:"<b>Ranged spell attack.</b> On a hit, the target doubles over laughing — incapacitated with its speed halved until the start of your next turn."},
+
+  // ---- 2nd level ----
+  {name:"Serpensortia", level:2, school:T, start:2, sub:"The Snake Summons Spell", time:"1 action", range:"30 feet", duration:"Instantaneous", text:"A venomous snake appears in an unoccupied space you can see. It rolls initiative and takes its own turns. It won't willingly attack you, but you can't control its actions or targets, and it can be turned against you by magical means.<br><b>Higher levels:</b> two snakes at 4th, three at 6th, four at 8th. Initiative is rolled as a group."},
+  {name:"Expelliarmus", level:2, school:C, start:2, sub:"The Disarming Charm", time:"1 action", range:"60 feet", duration:"Instantaneous", atk:true, text:"<b>Ranged spell attack.</b> On a hit, the target drops one item of your choice that it's holding. The object lands 10 feet away in a random direction.<br><b>Higher levels:</b> from 3rd, you choose the direction and add 10 feet to the distance per slot level above 2nd."},
+  {name:"Stupefy", level:2, school:C, start:2, sub:"The Stunning Spell", time:"1 action", range:"60 feet", duration:"10 minutes", atk:true, text:"<b>Ranged spell attack.</b> On a hit, the target falls unconscious for the duration, or until revived with rennervate.<br><b>Higher levels:</b> duration becomes 1 hour at 3rd or 8 hours at 4th. Alternatively from 4th, target a beast instead — 10 minutes at 4th, 1 hour at 5th, 8 hours at 6th."},
+  {name:"Slugulus Eructo", level:2, school:J, start:2, sub:"The Slug-Vomiting Hex", time:"1 action", range:"60 feet", duration:"1 round", atk:true, text:"<b>Ranged spell attack.</b> On a hit, 3d8 psychic damage and one level of exhaustion (this spell can't push it past 5 levels). If it tries to cast verbally before the end of its next turn, it must succeed on a Constitution save or the casting fails and the spell is wasted.<br><b>Higher levels:</b> +1d8 per slot level above 2nd."},
+  {name:"Protego Maxima", level:2, school:C, start:2, sub:"The Orb Shield Charm", time:"1 action or reaction, when you are hit by an attack", range:"Self", duration:"Dedication, up to 10 minutes", ded:true, text:"A fully encompassing protego — less durable, more coverage. <b>+3 AC</b> for the duration, including against the triggering attack. Against any effect allowing a Strength or Dexterity save for half damage, you instead take no damage on a success and half on a failure."},
+  {name:"Muffliato", level:2, school:C, start:2, sub:"The Anti-Eavesdropping Charm", time:"1 action", range:"Self", duration:"Concentration, up to 1 hour", conc:true, text:"Each creature you choose within 30 feet, you included, can converse without anyone else hearing — outsiders hear only a faint buzzing. A creature within 15 feet that sees your mouth move knows your voice is being masked."},
+  {name:"Arania Exumai", level:2, school:J, start:1, sub:"The Spider Repelling Spell", time:"1 action", range:"Self (30-foot cone)", duration:"Instantaneous", text:"Each spider-like creature in a 30-foot cone makes a Constitution save. On a fail, 4d6 radiant damage and knocked back 5 feet plus 5 × your spellcasting modifier in feet. On a success, half damage and no knockback. Non-arachnids in the area are unaffected.<br><b>Higher levels:</b> +1d6 damage and +10 ft shove per slot level above 2nd."},
+  {name:"Geminio", level:2, school:C, start:1, sub:"The Doubling Charm", time:"1 action", range:"Touch", duration:"10 days", text:"Tap an object fitting a 1-foot cube and a perfect duplicate pops out. It's indistinguishable by normal means but has none of the original's magical qualities, has a quarter of its hit points, and vanishes when the spell ends.<br>A creature within 5 feet can use an action to make an Intelligence (Investigation) check against your spell save DC to spot the flaws. After 5 days it degrades visibly, giving advantage on that check. Specialis revelio identifies it outright.<br><b>Higher levels:</b> +1 foot of cube per slot level above 2nd."},
+  {name:"Pellucidi Pellis", level:2, school:C, start:0, sub:"The Disillusionment Charm", time:"1 action", range:"Touch", duration:"Concentration, up to 1 hour", conc:true, text:"A creature becomes invisible until the spell ends, along with anything it wears or carries while on its person. The spell ends for a target that attacks or casts a spell.<br><b>Higher levels:</b> from 3rd, one additional creature per slot level above 2nd, targets within 5 feet of each other."},
+  {name:"Silencio", level:2, school:C, start:0, sub:"The Silencing Charm", time:"1 action", range:"90 feet", duration:"1 minute", text:"Choose one target you can see. A creature makes a Wisdom save; on a fail, or if the target is an object, all sound it creates is silenced. Casting any spell with a verbal component is impossible while affected."},
+  {name:"Partis Temporus", level:2, school:C, start:0, sub:"The Barrier-Opening Charm", time:"1 action", range:"90 feet", duration:"Instantaneous", text:"On any area spell of 3rd level or lower forming a line, wall or perimeter, an opening appears at a point you can see — your choice of dimensions, up to 5 feet wide and 8 feet tall. Against a spell of 4th level or higher, make an ability check with your spellcasting ability against DC 10 + the spell's level. The opening can be dispelled at will.<br><b>Higher levels:</b> from 3rd, the opening is automatic if the target spell's level is at most one higher than your slot."},
+  {name:"Incarcerous", level:2, school:T, start:0, sub:"The Binding Spell", time:"1 action", range:"30 feet", duration:"24 hours", text:"Black cords wrap around a target. An unwilling creature makes a Strength save or is restrained for the duration. On casting you can anchor the ropes to the ground so the target can't be moved by outside forces.<br>The restrained creature, or anyone who can reach it, can use an action to make a Strength check against your spell save DC to end it.<br><b>Higher levels:</b> from 4th, the creature is also incapacitated and can't make the Strength check to escape."},
+  {name:"Abscondi", level:2, school:C, start:0, sub:"The Track Obliteration Charm", time:"1 action", range:"Self", duration:"Concentration, up to 1 hour", conc:true, text:"Each creature you choose within 30 feet, you included, gains <b>+10 to Dexterity (Stealth)</b> and can't be tracked except by magical means, leaving no tracks or traces of passage."},
+  {name:"Finite Incantatem", level:2, school:C, start:0, sub:"The General Counter-spell", time:"1 action", range:"30 feet", duration:"Instantaneous", text:"One non-Transfiguration spell of 2nd level or lower on a creature, object or magical effect ends. Name a spell you know is affecting it, or a random one ends if you don't know. Against a higher-level spell, make an ability check with your spellcasting ability against DC 10 + the spell's level.<br><b>Higher levels:</b> from 3rd, automatically end a non-Transfiguration spell whose level is at or below your slot."},
+  {name:"Relashio", level:2, school:J, start:0, sub:"The Revulsion Jinx", time:"1 action", range:"60 feet", duration:"Instantaneous", text:"Forces a target to release its grip. A creature makes a Wisdom save or must let go of whatever it is restraining — this ends any grapple or restrain it was imposing. An object secured by a mundane or magical lock, or stuck, becomes unlocked or unbarred, with a loud clanking audible 100 feet away.<br>A creature isn't forced to drop something it's merely holding; it must be restraining it."},
+
+  // ---- 3rd level ----
+  {name:"Lumos Maxima", level:3, school:C, start:2, sub:"The Daylight Charm", time:"1 action", range:"90 feet", duration:"1 hour", text:"A small floating ball sheds bright light in a 60-foot radius and dim light 60 feet beyond. Bonus action to move it anywhere within range."},
+  {name:"Langlock", level:3, school:J, start:2, sub:"The Gagging Jinx", time:"1 action or reaction, when you see a creature within 60 feet casting", range:"60 feet", duration:"1 round", text:"Make an ability check with your spellcasting ability against DC 10 + the spell's level. On a success, the creature's spell fails and has no effect.<br>On a success, or if it was casting non-verbally anyway, the target must cast all spells non-verbally for the duration — verbal attempts need an Intelligence save or the spell is wasted."},
+  {name:"Depulso", level:3, school:C, start:2, sub:"The Banishing Charm", time:"1 action", range:"60 feet", duration:"Instantaneous", text:"A target is shoved directly away from you, thrown 5 feet plus 5 × your spellcasting modifier in feet. Point at it with your wand.<br>Against a creature, or an object being worn or carried, make a check using 26 Strength (+8) contested by the target's Strength (Athletics). You have advantage if the target is Medium or smaller.<br><b>Higher levels:</b> +10 feet of shove per slot level above 3rd."},
+  {name:"Fortissimum", level:3, school:C, start:0, sub:"The Unbreakable Charm", time:"1 action", range:"Touch", duration:"Until dispelled", text:"One object fitting a 1-foot cube becomes completely invulnerable to physical destruction, immune to all damage magical or mundane. Spells that directly change the object — vera verto, evanesco — still work on it.<br><b>Higher levels:</b> +1 foot of cube per slot level above 3rd."},
+  {name:"Ignis Laqueis", level:3, school:T, start:1, sub:"The Fire Whip Spell", time:"1 action", range:"60 feet", duration:"Dedication, up to 1 minute", ded:true, atk:true, text:"<b>Melee spell attack.</b> On a hit, 4d10 fire damage and the target is grappled for the duration. It can use an action to attempt a Strength or Dexterity save to escape, ending the spell on a success.<br>On each of your turns maintaining dedication, the whip tightens for an automatic 4d10 fire. If the target is Large or smaller you can use a bonus action to pull it up to 10 feet closer.<br><b>Higher levels:</b> +1d10 to both the initial and ongoing damage per slot level above 3rd."},
+  {name:"Novum Spirare", level:3, school:C, start:0, sub:"The Bubble-Head Charm", time:"1 action", range:"Touch", duration:"24 hours", text:"A bubble-like mask of endless fresh air forms over a willing creature's mouth, nose and ears. It can breathe underwater or in a vacuum, and is immune to poison damage from inhalation for the duration. The creature can dispel it with an action."},
+  {name:"Repello Inimicum", level:3, school:C, start:0, sub:"The Evil Protection Charm", time:"1 minute", range:"Self (20-foot-radius hemisphere)", duration:"1 hour", text:"A hemisphere of protective energy against your choice of Dark wizards, other Dark beings, or Dark beasts. Affected creatures can't willingly enter by nonmagical means, and must succeed on a Charisma save to apparate in. They have disadvantage on attacks against targets inside, and can't charm or frighten anyone inside.<br><b>Higher levels:</b> +1 hour per slot level above 3rd."},
+  {name:"Confringo", level:3, school:J, start:0, sub:"The Blasting Curse", time:"1 action", range:"90 feet", duration:"Instantaneous", text:"A ball of fire explodes at a point you choose. Each creature in a 10-foot-radius sphere makes a Dexterity save, taking <b>8d6 fire</b> on a fail, half on a success. The fire spreads around corners and ignites flammable objects that aren't worn or carried.<br><b>Higher levels:</b> +1d6 damage and +5 ft radius per slot level above 3rd."},
+  {name:"Expulso", level:3, school:J, start:0, sub:"The Concussive Curse", time:"1 action", range:"90 feet", duration:"Instantaneous", text:"A wave of thunderous force bursts from a point you choose. Each creature in a 10-foot-radius sphere makes a Constitution save, taking <b>4d8 thunder</b> and pushed 10 feet on a fail, half and no push on a success. Unsecured objects fully inside are pushed 10 feet, and the boom carries 100 feet.<br><b>Higher levels:</b> +1d8 per slot level above 3rd."},
+  {name:"Impedimenta", level:3, school:J, start:0, sub:"The Impediment Jinx", time:"1 action", range:"60 feet", duration:"1 minute", text:"Wisdom save or affected for the duration. Speed halved, <b>−2 to AC and Dexterity saves</b>, no reactions, and only an action or a bonus action on its turn, not both. It can't make more than one attack per turn regardless of its abilities.<br>If it tries to cast a spell with a 1-action casting time, roll a d20 — on an 11 or higher the spell is delayed to its next turn and it must spend that action completing it, or the spell is wasted.<br>It repeats the Wisdom save at the end of each of its turns, ending the effect on a success."},
+  {name:"Fianto Duri", level:3, school:C, start:0, sub:"The Reinforcing Charm", time:"1 action", range:"90 feet", duration:"Instantaneous", text:"Cast on an active defensive spell that improves AC or grants temporary hit points. Each creature affected by that spell gains temporary hit points equal to <b>twice your caster level + your spellcasting modifier</b>. Those temp HP are lost when the targeted spell ends or stops affecting them.<br>Uniquely, you can cast this on a defensive spell you are concentrating on without breaking that concentration or ending it."},
+  {name:"Conjunctivia", level:3, school:J, start:0, sub:"The Conjunctivitis Curse", time:"1 action", range:"60 feet", duration:"1 minute", atk:true, text:"<b>Ranged spell attack.</b> On a hit, <b>4d8 necrotic</b> and the target is blinded for the duration. It can make a Constitution save at the end of each of its turns to end the spell. Creatures that are normally magically resistant are vulnerable to this spell.<br><b>Higher levels:</b> +1d8 per slot level above 3rd."},
+
+  // ---- 4th level ----
+  {name:"Levicorpus/Liberacorpus", level:4, school:J, start:0, sub:"The Dangling Jinx", time:"1 action", range:"30 feet", duration:"1 minute", text:"Yanks a being's feet out from under it, leaving it dangling by an ankle. <b>Always cast as though with Subtle Spell, free, whether or not you have it.</b><br>A creature you can see makes a Wisdom save or takes 3d10 psychic damage and is restrained. If it tries to cast a spell, it must first succeed on a Wisdom save or the casting fails and the spell is wasted."},
+  {name:"Reducto", level:4, school:J, start:0, sub:"The Reductor Curse", time:"1 action", range:"90 feet", duration:"Instantaneous", text:"Disintegrates a Large or smaller nonmagical object, or a transfigured or conjured construct, that you can see within range. Against a Huge or larger target, it disintegrates a 10-foot-cube portion."},
+  {name:"Sectumsempra", level:4, school:J, start:1, sub:"The Lacerating Curse", time:"1 action", range:"60 feet", duration:"Instantaneous", atk:true, text:"<b>Ranged spell attack.</b> On a hit, the target makes a Constitution save. On a fail: <b>10d6 slashing</b>, plus another <b>5d6</b> at the end of its next turn. On a success, half of each.<br><b>Higher levels:</b> +2d6 initial damage per slot level above 4th."},
+
+  // ---- 5th level ----
+  {name:"Omnifracto", level:5, school:J, start:0, sub:"The Shield Penetrating Spell", time:"1 action", range:"90 feet", duration:"Instantaneous", text:"A piercing beam shatters defensive magic. Choose a target within range — protego totalum, repello inimicum, and every defensive spell improving that creature's AC or granting it temporary hit points are dispelled."},
+  {name:"Cave Inimicum", level:5, school:C, start:0, sub:"The Hiding Charm", time:"1 minute", range:"Self (10-foot-radius hemisphere)", duration:"1 hour", text:"A dome filters vision of anything you designate, rendering it infallibly invisible. Undetectable from outside, faintly visible from within like wavering glass. Anyone can move through it freely to see what's hidden.<br><b>Higher levels:</b> from 6th, select or stack one per slot level above 5th — +20 ft radius, 8-hour duration, block sound, or block smell."},
+  {name:"Salvio Hexia", level:5, school:C, start:0, sub:"The Curse-Blocking Charm", time:"1 action", range:"Self (10-foot-radius sphere)", duration:"Concentration, up to 1 minute", conc:true, text:"Each creature in the area gains temporary hit points equal to your spellcasting modifier at the start of its turn, and <b>advantage on all saving throws against spells</b>."},
+
+  // ---- 6th level ----
+  {name:"Protego Totalum", level:6, school:C, start:1, sub:"The Area Shield Charm", time:"1 action", range:"Self (10-foot-radius sphere)", duration:"Concentration, up to 1 minute", conc:true, text:"An immobile shimmering barrier springs up in a 10-foot radius around you. Any attack or spell of <b>5th level or lower</b> cast from outside can't affect creatures or objects inside, even when cast with a higher slot. Such spells can target them but have no effect, and the area inside is excluded from their areas.<br><b>Higher levels:</b> blocks one level higher per slot level above 6th."}
+];
+
+/* ==================================================================
+   2. CHARACTER — edit when you level up
+   ================================================================== */
+const CHAR = {
+  hpMax:76, acBase:18, acFlying:26, sorceryMax:12,
+  slots:[4,3,3,3,2,1],
+  slotCost:{1:2,2:3,3:5,4:6,5:7},
+  castsToLock:2
+};
+
+const CARDS = [
+  { id:"mischief", tag:"Once per turn", title:"Mischief Managed",
+    text:"Extra 4d6 damage to one creature you hit with a spell attack.", track:"turn" },
+  { id:"trickster", tag:"Bonus action", title:"Trickster's Grace",
+    text:"Dash, Disengage or Hide as a bonus action.", track:"none" },
+  { id:"animagus", tag:"Bonus action", title:"Animagic Bond",
+    text:"Owl \u2014 Evasion form, Air, Small. Transform for up to 1 hour, or revert. Speak with Animals at will in human form.<br><b>While transformed:</b> you take the owl's HP and hit dice, you can't cast spells, and Dedication spells end. Concentration survives. You keep INT/WIS/CHA and all your proficiencies, and gain the owl's. Reverting returns you to the HP you had before \u2014 excess damage carries over.<br><b>Evasion Animagus:</b> +10 ft movement, and Dashing doesn't provoke opportunity attacks.", track:"toggle" },
+  { id:"hewill", tag:"Reaction", title:"He Will Know Why",
+    text:"When you or an ally hits 0 HP, move that damage to another willing party member \u2014 including yourself.", track:"combat" },
+  { id:"aoe", tag:"Always on", title:"Unrestrained Arcana",
+    text:"Every area-of-effect spell you cast expands its area by 5 feet.", track:"none", always:true },
+  { id:"pinpoint", tag:"Always on", title:"Pinpoint Accuracy",
+    text:"Ranged spell attacks ignore up to half cover. Spell attack bonus is +10.", track:"none", always:true },
+  { id:"aerial", tag:"Always on", title:"Aerial Combatant",
+    text:"No disadvantage on attack rolls from flying. Proficient with Vehicles (Broomstick).", track:"none", always:true },
+  { id:"forked", tag:"Always on", title:"Forked Tongue",
+    text:"Advantage on Deception when you're stretching the truth to fit your needs.", track:"none", always:true },
+  { id:"iron", tag:"Always on", title:"Iron Will",
+    text:"Can't be intimidated by peers \u2014 but you cave under pressure from authority figures.", track:"none", always:true }
+];
+
+const SAVES = [["Strength","+1",0],["Dexterity","+5",0],["Constitution","+4",1],
+  ["Intelligence","\u22121",0],["Wisdom","+1",0],["Charisma","+9",1]];
+const SKILLS = [["Athletics","+5",1],["Acrobatics","+9",1],["Sleight of Hand","+9",1],["Stealth","+9",1],
+  ["Herbology","\u22121",0],["History of Magic","\u22121",0],["Investigation","\u22121",0],["Muggle Studies","\u22121",0],
+  ["Insight","+1",0],["Magical Creatures","+1",0],["Medicine","+1",0],["Perception","+1",0],
+  ["Potion-Making","+1",0],["Survival","+1",0],["Deception","+5",0],["Intimidation","+5",0],
+  ["Performance","+9",1],["Persuasion","+9",1]];
+
+const ORD = ["Cantrips","1st level","2nd level","3rd level","4th level","5th level","6th level","7th level","8th level","9th level"];
+const slug = function(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,"-"); };
+
+/* ==================================================================
+   3. STATE
+   ================================================================== */
+const KEY = "cassian-tracker-v5";
+let mem = null;
+const store = {
+  read:function(){ try{ var r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; }catch(e){ return mem; } },
+  write:function(v){ mem = v; try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(e){} }
+};
+function baseline(){
+  return { hp:CHAR.hpMax, flying:false, sorcery:CHAR.sorceryMax, slots:CHAR.slots.slice(), cards:{} };
+}
+let S = Object.assign(baseline(), { insp:{self:true,give:true}, prog:{}, cls:{} }, store.read() || {});
+if(!Array.isArray(S.slots) || S.slots.length !== CHAR.slots.length) S.slots = CHAR.slots.slice();
+if(!S.cards) S.cards = {};
+if(!S.prog) S.prog = {};
+if(!S.cls) S.cls = {};
+if(!S.insp) S.insp = {self:true,give:true};
+const save = function(){ store.write(S); };
+const $ = function(id){ return document.getElementById(id); };
+
+function toast(msg){
+  var t = $("toast"); t.textContent = msg; t.classList.add("on");
+  clearTimeout(t._t); t._t = setTimeout(function(){ t.classList.remove("on"); }, 1700);
+}
+(function(){ var tr = document.querySelector(".trail"); for(var i=0;i<40;i++) tr.appendChild(document.createElement("i")); })();
+
+/* ==================================================================
+   4. TABS
+   ================================================================== */
+document.querySelectorAll(".tabs button").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    document.querySelectorAll(".tabs button").forEach(function(b){
+      b.setAttribute("aria-selected", b===btn ? "true" : "false");
+    });
+    document.querySelectorAll(".panel").forEach(function(p){
+      p.classList.toggle("on", p.id === "tab-"+btn.dataset.tab);
+    });
+    window.scrollTo(0,0);
+  });
+});
+
+/* ==================================================================
+   5. COMBAT
+   ================================================================== */
+function drawVitals(){
+  $("hpNow").textContent = S.hp;
+  $("hpFill").style.width = Math.max(0, Math.min(100, S.hp / CHAR.hpMax * 100)) + "%";
+  $("acVal").textContent = S.flying ? CHAR.acFlying : CHAR.acBase;
+  $("flyBtn").setAttribute("aria-pressed", S.flying ? "true" : "false");
+}
+document.querySelectorAll("[data-hp]").forEach(function(b){
+  var step = +b.dataset.hp;
+  var bump = function(){ S.hp = Math.max(0, Math.min(CHAR.hpMax, S.hp + step)); drawVitals(); save(); };
+  b.addEventListener("click", bump);
+  var timer, ramp;
+  b.addEventListener("pointerdown", function(){ timer = setTimeout(function(){ ramp = setInterval(bump, 80); }, 420); });
+  ["pointerup","pointerleave","pointercancel"].forEach(function(ev){
+    b.addEventListener(ev, function(){ clearTimeout(timer); clearInterval(ramp); });
+  });
+});
+$("flyBtn").addEventListener("click", function(){ S.flying = !S.flying; drawVitals(); save(); });
+
+function drawInsp(){
+  $("inspSelf").setAttribute("aria-pressed", S.insp.self ? "true" : "false");
+  $("inspGive").setAttribute("aria-pressed", S.insp.give ? "true" : "false");
+  $("inspSelf").querySelector(".s").textContent = S.insp.self ? "to spend" : "spent";
+  $("inspGive").querySelector(".s").textContent = S.insp.give ? "hand to an ally" : "given away";
+}
+$("inspSelf").addEventListener("click", function(){ S.insp.self = !S.insp.self; drawInsp(); save(); });
+$("inspGive").addEventListener("click", function(){ S.insp.give = !S.insp.give; drawInsp(); save(); });
+
+function drawSorcery(){
+  var wrap = $("sorcPips"); wrap.innerHTML = "";
+  for(var i=0;i<CHAR.sorceryMax;i++){
+    (function(i){
+      var b = document.createElement("button");
+      var spent = i >= S.sorcery;
+      b.className = "pip sorc" + (spent ? " spent" : "");
+      b.setAttribute("aria-label", "Sorcery point " + (i+1) + ", " + (spent ? "spent" : "available"));
+      b.addEventListener("click", function(){ S.sorcery = spent ? i+1 : i; drawSorcery(); drawFlexible(); save(); });
+      wrap.appendChild(b);
+    })(i);
+  }
+  $("sorcNow").textContent = S.sorcery;
+  document.querySelectorAll("#metaChips .chip").forEach(function(c){ c.disabled = S.sorcery < +c.dataset.sp; });
+}
+$("metaChips").addEventListener("click", function(e){
+  var c = e.target.closest(".chip"); if(!c || c.disabled) return;
+  var n = +c.dataset.sp; if(S.sorcery < n) return;
+  S.sorcery -= n; drawSorcery(); drawFlexible(); save();
+  toast(c.firstChild.textContent.trim() + " \u2014 " + n + " spent, " + S.sorcery + " left");
+});
+
+function drawSlots(){
+  var wrap = $("slotRows"); wrap.innerHTML = "";
+  var short = ["1st","2nd","3rd","4th","5th","6th","7th","8th","9th"];
+  CHAR.slots.forEach(function(max, i){
+    var row = document.createElement("div"); row.className = "slotrow";
+    var lab = document.createElement("div"); lab.className = "lvl";
+    lab.innerHTML = short[i] + "<em>Level</em>"; row.appendChild(lab);
+    var pips = document.createElement("div"); pips.className = "pips";
+    for(var n=0;n<max;n++){
+      (function(n){
+        var b = document.createElement("button");
+        var spent = n >= S.slots[i];
+        b.className = "pip" + (spent ? " spent" : "");
+        b.setAttribute("aria-label", short[i] + " level slot " + (n+1) + ", " + (spent ? "spent" : "available"));
+        b.addEventListener("click", function(){ S.slots[i] = spent ? n+1 : n; drawSlots(); drawFlexible(); save(); });
+        pips.appendChild(b);
+      })(n);
+    }
+    row.appendChild(pips); wrap.appendChild(row);
+  });
+}
+
+function drawFlexible(){
+  var mk = $("makeSlots"), bn = $("burnSlots");
+  mk.innerHTML = ""; bn.innerHTML = "";
+  Object.keys(CHAR.slotCost).forEach(function(k){
+    var lvl = +k, cost = CHAR.slotCost[lvl], i = lvl-1;
+    if(CHAR.slots[i] === undefined) return;
+    var b = document.createElement("button"); b.className = "chip";
+    b.innerHTML = "Make a level " + lvl + " slot <span class=\"cost\">" + cost + " SP</span>";
+    b.disabled = S.sorcery < cost || S.slots[i] >= CHAR.slots[i];
+    b.addEventListener("click", function(){
+      S.sorcery -= cost; S.slots[i] += 1;
+      drawSorcery(); drawSlots(); drawFlexible(); save(); toast("Level " + lvl + " slot restored");
+    });
+    mk.appendChild(b);
+  });
+  CHAR.slots.forEach(function(max, i){
+    if(max === 0) return;
+    var lvl = i+1;
+    var b = document.createElement("button"); b.className = "chip";
+    b.innerHTML = "Burn a level " + lvl + " slot <span class=\"cost\">+" + lvl + " SP</span>";
+    b.disabled = S.slots[i] < 1 || S.sorcery >= CHAR.sorceryMax;
+    b.addEventListener("click", function(){
+      S.slots[i] -= 1; S.sorcery = Math.min(CHAR.sorceryMax, S.sorcery + lvl);
+      drawSorcery(); drawSlots(); drawFlexible(); save(); toast("+" + lvl + " sorcery points");
+    });
+    bn.appendChild(b);
+  });
+}
+
+/* ==================================================================
+   6. FEATURES
+   ================================================================== */
+function drawCards(){
+  var wrap = $("cards"); wrap.innerHTML = "";
+  CARDS.forEach(function(c){
+    var on = !!S.cards[c.id];
+    var el = document.createElement("div");
+    el.className = "card" + (c.always ? " always" : "") + (on && c.track !== "toggle" ? " used" : "");
+    el.innerHTML = "<h3>" + c.title + "<span class=\"tag\">" + c.tag + "</span></h3><p>" + c.text + "</p>";
+    if(c.track !== "none"){
+      var b = document.createElement("button"); b.className = "mark";
+      b.textContent = c.track === "toggle"
+        ? (on ? "In animal form \u2014 revert" : "Transform")
+        : (on ? "Used \u2014 tap to restore" : "Mark used");
+      b.addEventListener("click", function(){ S.cards[c.id] = !on; drawCards(); save(); });
+      el.appendChild(b);
+    }
+    wrap.appendChild(el);
+  });
+}
+
+/* ==================================================================
+   7. SPELLS — cast to lock in
+   ================================================================== */
+var ST = [
+  {k:"none",       label:"Not yet cast",                    short:"Not cast"},
+  {k:"researched", label:"Successfully researched",         short:"Researched"},
+  {k:"failed",     label:"Attempted (but failed)",          short:"Failed"},
+  {k:"one",        label:"1 successful cast",               short:"1 cast"},
+  {k:"locked",     label:"2+ successful casts (locked in)", short:"Locked in"}
+];
+function statusOf(sp){
+  var v = S.prog[slug(sp.name)];
+  if(v) return v;
+  return sp.start === 2 ? "locked" : sp.start === 1 ? "one" : "failed";
+}
+function isLocked(sp){ return statusOf(sp) === "locked"; }
+function stMeta(k){ for(var i=0;i<ST.length;i++) if(ST[i].k===k) return ST[i]; return ST[0]; }
+
+function castChip(t){
+  if(!t) return "";
+  var x = t.toLowerCase();
+  var bonus = x.indexOf("bonus action") > -1;
+  var react = x.indexOf("reaction") > -1;
+  var act   = x.indexOf("1 action") > -1 || x.indexOf("action or") > -1;
+  if(bonus) return "Bonus action";
+  if(react && act) return "Action / reaction";
+  if(react) return "Reaction";
+  if(x.indexOf("1 minute") > -1) return "1 minute";
+  if(act) return "Action";
+  return t;
+}
+
+function drawSpells(filter){
+  var wrap = $("spellList");
+  var q = (filter || "").trim().toLowerCase();
+
+  var lockedCount = SPELLS.filter(isLocked).length;
+  $("tally").innerHTML = "<b>" + lockedCount + "</b> of " + SPELLS.length +
+    " locked in \u00b7 " + (SPELLS.length - lockedCount) + " still need casting rolls";
+
+  var hits = SPELLS.filter(function(s){
+    return !q || [s.name, s.sub, s.school, ORD[s.level], s.time, s.text].join(" ").toLowerCase().indexOf(q) !== -1;
+  });
+  if(!hits.length){
+    wrap.innerHTML = "<div class=\"card\"><p>Nothing matches that. Try a different word.</p></div>";
+    return;
+  }
+
+  wrap.innerHTML = "";
+  var levels = hits.map(function(s){ return s.level; })
+    .filter(function(v,i,a){ return a.indexOf(v) === i; })
+    .sort(function(a,b){ return a-b; });
+
+  levels.forEach(function(lvl){
+    var group = document.createElement("details");
+    group.className = "lvlgroup";
+    if(q) group.open = true;
+    var inLvl = hits.filter(function(s){ return s.level === lvl; })
+      .sort(function(a,b){ return a.name.localeCompare(b.name); });
+    var lockedHere = inLvl.filter(isLocked).length;
+
+    var sum = document.createElement("summary");
+    sum.innerHTML = "<span>" + ORD[lvl] + "</span><span class=\"n\">" + lockedHere + "/" + inLvl.length + " locked</span>";
+    group.appendChild(sum);
+
+    var body = document.createElement("div"); body.className = "lvlbody";
+    inLvl.forEach(function(sp){
+      var st = statusOf(sp), meta = stMeta(st);
+      var d = document.createElement("details");
+      d.className = "spell st-" + st;
+
+      var tags = "";
+      if(sp.atk)  tags += "<span class=\"badge atk\">Attack roll</span>";
+      if(sp.ded)  tags += "<span class=\"badge ded\">Dedication</span>";
+      if(sp.conc) tags += "<span class=\"badge conc\">Concentration</span>";
+
+      d.innerHTML =
+        "<summary>" +
+          "<div class=\"srow\">" +
+            "<span class=\"nm\">" + sp.name + "</span>" +
+            "<span class=\"badge st\">" + meta.short + "</span>" +
+          "</div>" +
+          "<div class=\"srow2\">" +
+            "<span class=\"ct\">" + castChip(sp.time) + "</span>" +
+            (sp.range ? "<span class=\"dot\">" + sp.range + "</span>" : "") +
+            (sp.duration ? "<span class=\"dot\">" + sp.duration + "</span>" : "") +
+            tags +
+          "</div>" +
+        "</summary>" +
+        "<div class=\"body\">" +
+          (sp.sub ? "<div class=\"sub\">" + sp.sub + "</div>" : "") +
+          "<dl class=\"statline\">" +
+            "<dt>Casting time</dt><dd>" + (sp.time || "\u2014") + "</dd>" +
+            "<dt>Range</dt><dd>" + (sp.range || "\u2014") + "</dd>" +
+            "<dt>Duration</dt><dd>" + (sp.duration || "\u2014") + "</dd>" +
+            "<dt>School</dt><dd>" + (sp.school || "\u2014") + "</dd>" +
+          "</dl>" +
+          (sp.text ? "<p>" + sp.text + "</p>" : "") +
+        "</div>";
+
+      // ---- casting progress ----
+      var prog = document.createElement("div");
+      prog.className = "prog";
+      prog.innerHTML = "<div class=\"plab\">Casting progress</div>";
+
+      ST.forEach(function(opt){
+        var b = document.createElement("button");
+        b.className = "opt" + (opt.k === st ? " on" : "");
+        b.setAttribute("role","radio");
+        b.setAttribute("aria-checked", opt.k === st ? "true" : "false");
+        b.innerHTML = "<span class=\"dotmark\"></span>" + opt.label;
+        b.addEventListener("click", function(e){
+          e.preventDefault();
+          S.prog[slug(sp.name)] = opt.k;
+          save();
+          var open = d.hasAttribute("open");
+          drawSpells($("spellSearch").value);
+          if(opt.k === "locked") toast(sp.name + " is locked in");
+        });
+        prog.appendChild(b);
+      });
+
+      var c = S.cls[slug(sp.name)] || {};
+      [["r","Cast in Ancient Runes class"],["a","Cast in Arithmancy class"]].forEach(function(pair){
+        var b = document.createElement("button");
+        b.className = "chk" + (c[pair[0]] ? " on" : "");
+        b.setAttribute("aria-pressed", c[pair[0]] ? "true" : "false");
+        b.innerHTML = "<span class=\"box\"></span>" + pair[1];
+        b.addEventListener("click", function(e){
+          e.preventDefault();
+          var key = slug(sp.name);
+          S.cls[key] = S.cls[key] || {};
+          S.cls[key][pair[0]] = !S.cls[key][pair[0]];
+          save();
+          drawSpells($("spellSearch").value);
+        });
+        prog.appendChild(b);
+      });
+
+      d.querySelector(".body").appendChild(prog);
+      body.appendChild(d);
+    });
+    group.appendChild(body);
+    wrap.appendChild(group);
+  });
+}
+$("spellSearch").addEventListener("input", function(e){ drawSpells(e.target.value); });
+
+/* ==================================================================
+   7b. METAMAGIC REFERENCE
+   ================================================================== */
+const METAMAGIC = [
+  { name:"Fierce Spell", cost:"2 or 4 SP", free:true,
+    text:"Spend 2 sorcery points to cast the spell as if from a slot one level higher, or 4 points for two levels higher. It can't go above your highest available slot level." },
+  { name:"Resistant Spell", cost:"1 SP per level", free:true,
+    text:"Spend 1 point per added level to make spell deflection, finite incantatem, reparifarge and langlock treat your spell as if it were cast from a higher slot. It can't go above your highest available slot level." },
+  { name:"Quickened Spell", cost:"2 SP", free:false,
+    text:"Turn a casting time of 1 action into 1 bonus action for that casting." },
+  { name:"Subtle Spell", cost:"2\u00d7 level, min 1", free:false,
+    text:"Cast the spell with no verbal components." },
+  { name:"Twinned Spell", cost:"= spell level", free:false,
+    text:"If the spell targets only one creature and isn't range self, hit a second creature in range with the same spell. A cantrip costs 1 point." }
+];
+(function(){
+  var wrap = document.getElementById("metaRef");
+  wrap.innerHTML = METAMAGIC.map(function(m){
+    return "<div class=\"card\"><h3>" + m.name + "<span class=\"tag\">" + m.cost + "</span></h3>" +
+      "<p>" + m.text + (m.free ? " <em>Doesn't count against your number of metamagic options.</em>" : "") + "</p></div>";
+  }).join("");
+})();
+
+/* ==================================================================
+   8. SHEET
+   ================================================================== */
+(function(){
+  var g = $("refGrid");
+  var col = function(title, rows){
+    var d = document.createElement("div");
+    d.innerHTML = "<div class=\"eyebrow\" style=\"margin-bottom:6px\">" + title + "</div>" +
+      rows.map(function(r){
+        return "<div class=\"line\"><span>" + r[0] + "</span><span><b>" + r[1] + "</b>" +
+          (r[2] ? " <span class=\"p\">P</span>" : "") + "</span></div>";
+      }).join("");
+    return d;
+  };
+  g.appendChild(col("Saving throws", SAVES));
+  g.appendChild(col("Skills", SKILLS));
+  $("passives").innerHTML =
+    "<div class=\"line\"><span>Passive Perception</span><b>11</b></div>" +
+    "<div class=\"line\"><span>Passive Investigation</span><b>9</b></div>" +
+    "<div class=\"line\"><span>Passive Insight</span><b>11</b></div>" +
+    "<div class=\"line\"><span>Initiative</span><b>+5</b></div>" +
+    "<div class=\"line\"><span>Proficiency bonus</span><b>+4</b></div>" +
+    "<div class=\"line\"><span>Apparition</span><b>Yes</b></div>" +
+    "<div class=\"eyebrow\" style=\"margin:16px 0 6px\">Casting attempt by school</div>" +
+    "<div class=\"line\"><span>Charms</span><b>+10</b></div>" +
+    "<div class=\"line\"><span>Jinxes, Hexes &amp; Curses</span><b>+10</b></div>" +
+    "<div class=\"line\"><span>Transfiguration</span><b>\u22122</b></div>" +
+    "<div class=\"line\"><span>Healing</span><b>\u22122</b></div>" +
+    "<div class=\"line\"><span>Divination</span><b>\u22124</b></div>";
+})();
+
+/* ==================================================================
+   9. RESTS
+   ================================================================== */
+$("btnShort").addEventListener("click", function(){
+  CARDS.forEach(function(c){ if(c.track === "combat" || c.track === "turn") S.cards[c.id] = false; });
+  drawCards(); save(); toast("Short rest \u2014 once-per-rest features are back");
+});
+$("btnLong").addEventListener("click", function(){
+  if(!confirm("Long rest: restore HP, spell slots and sorcery points?\n\nLocked-in spells and inspiration are kept.")) return;
+  S.hp = CHAR.hpMax; S.flying = false; S.sorcery = CHAR.sorceryMax;
+  S.slots = CHAR.slots.slice(); S.cards = {};
+  drawAll(); save(); toast("Mischief managed");
+});
+
+function drawAll(){
+  drawVitals(); drawInsp(); drawSorcery(); drawSlots(); drawFlexible(); drawCards();
+  drawSpells($("spellSearch").value);
+}
+drawAll();
+</script>
+</body>
+</html>
